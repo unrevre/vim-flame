@@ -24,12 +24,13 @@ function! flame#annotation(buf, line)
     return l:annotation[0]
 endfunction
 
-function! s:refresh(buf, line)
+function! flame#line(...)
     echo ''
-    let l:comment = flame#annotation(a:buf, a:line)
-    if l:comment !=# ''
-        echom l:comment
+    let l:comment = flame#annotation(bufnr('%'), line('.'))
+    if get(a:, 0, 0)
+        let l:comment = line('.').': '.l:comment
     endif
+    echom l:comment
 endfunction
 
 function! flame#init()
@@ -41,9 +42,9 @@ endfunction
 
 function! flame#enable()
     augroup flame
-        autocmd CursorMoved <buffer> call s:refresh(bufnr('%'), line('.'))
+        autocmd CursorMoved <buffer> call flame#line()
     augroup END
-    call s:refresh(bufnr('%'), line('.'))
+    call flame#line()
     let b:flame_toggle = function('flame#disable')
 endfunction
 

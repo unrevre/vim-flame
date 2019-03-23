@@ -8,6 +8,8 @@ augroup flame
     autocmd BufReadPre,FileReadPre * call flame#init()
 augroup END
 
-nnoremap <unique> <Plug>EnableFlame :call flame#enable()<CR>
-nnoremap <unique> <Plug>DisableFlame :call flame#disable()<CR>
-nnoremap <unique> <Plug>ToggleFlame :call flame#toggle()<CR>
+nnoremap <unique> <Plug>(LineFlame) :call flame#line(1)<CR>
+
+nnoremap <unique> <Plug>(EnableFlame) :call flame#enable()<CR>
+nnoremap <unique> <Plug>(DisableFlame) :call flame#disable()<CR>
+nnoremap <unique> <Plug>(ToggleFlame) :call flame#toggle()<CR>
