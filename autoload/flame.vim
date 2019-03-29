@@ -17,21 +17,17 @@ function! flame#annotation(buf, line)
 endfunction
 
 function! s:handler()
-    function! s:line(...) closure
+    function! s:line() closure
         echo ''
-        let l:comment = flame#annotation(bufnr('%'), line('.'))
-        if get(a:, 0, 0)
-            let l:comment = line('.').': '.l:comment
-        endif
-        echom l:comment
+        echom flame#annotation(bufnr('%'), line('.'))
     endfunction
 
     if has('timers') && has('lambda')
         let l:timer = 0
 
-        function! s:debounce(...) closure
+        function! s:debounce() closure
             call timer_stop(l:timer)
-            let l:timer = timer_start(50, {-> call(function('s:line'), a:000)})
+            let l:timer = timer_start(50, {-> s:line()})
         endfunction
 
         return 's:debounce'
@@ -48,7 +44,7 @@ function! flame#init()
     let b:flame_toggle = function('flame#enable')
 endfunction
 
-function! flame#line(...)
+function! flame#line()
     call s:on_cursor_movement()
 endfunction
 
