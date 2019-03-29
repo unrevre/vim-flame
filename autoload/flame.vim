@@ -16,28 +16,48 @@ function! flame#annotation(buf, line)
     return l:annotation[0]
 endfunction
 
-function! flame#line(...)
-    echo ''
-    let l:comment = flame#annotation(bufnr('%'), line('.'))
-    if get(a:, 0, 0)
-        let l:comment = line('.').': '.l:comment
+function! s:handler()
+    function! s:line(...) closure
+        echo ''
+        let l:comment = flame#annotation(bufnr('%'), line('.'))
+        if get(a:, 0, 0)
+            let l:comment = line('.').': '.l:comment
+        endif
+        echom l:comment
+    endfunction
+
+    if has('timers') && has('lambda')
+        let l:timer = 0
+
+        function! s:debounce(...) closure
+            call timer_stop(l:timer)
+            let l:timer = timer_start(50, {-> call(function('s:line'), a:000)})
+        endfunction
+
+        return 's:debounce'
     endif
-    echom l:comment
+
+    return 's:line'
 endfunction
 
 function! flame#init()
     if !exists('b:gitdir_path')
         let b:gitdir_path = git#dir(expand('%:p:h'))
     endif
+    let s:on_cursor_movement = function(s:handler())
     let b:flame_toggle = function('flame#enable')
+endfunction
+
+function! flame#line(...)
+    call s:on_cursor_movement()
 endfunction
 
 function! flame#enable()
     augroup flame
-        autocmd CursorMoved <buffer> call flame#line()
+        autocmd CursorMoved <buffer> call s:on_cursor_movement()
     augroup END
 
-    call flame#line()
+    call s:on_cursor_movement()
     let b:flame_toggle = function('flame#disable')
 endfunction
 
