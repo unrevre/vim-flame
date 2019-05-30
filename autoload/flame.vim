@@ -10,7 +10,7 @@ function! flame#annotation(buf, line)
         let l:annotation = ['Not committed yet']
     else
         let l:annotation = systemlist(l:gitcommand.' show '.l:commit.
-                    \' --format="%an | %ar | %s"')
+                    \' --format="%h | %ad | %s"')
     endif
     if v:shell_error > 0 | echo l:annotation[-1] | return | endif
     return l:annotation[0]
