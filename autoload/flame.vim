@@ -1,4 +1,4 @@
-function! flame#annotation(buf, line)
+function! flame#annotation(buf, line) abort
     let l:gitcommand = 'git --git-dir='.b:gitdir_path
                 \.' --work-tree='.fnamemodify(b:gitdir_path, ':h')
     let l:blame = systemlist(l:gitcommand.' annotate --contents - '
@@ -16,8 +16,8 @@ function! flame#annotation(buf, line)
     return l:annotation[0]
 endfunction
 
-function! s:handler()
-    function! s:line() closure
+function! s:handler() abort
+    function! s:line() closure abort
         echo ''
         echom flame#annotation(bufnr('%'), line('.'))
     endfunction
@@ -25,7 +25,7 @@ function! s:handler()
     if has('timers') && has('lambda')
         let l:timer = 0
 
-        function! s:debounce() closure
+        function! s:debounce() closure abort
             call timer_stop(l:timer)
             let l:timer = timer_start(50, {-> s:line()})
         endfunction
@@ -36,7 +36,7 @@ function! s:handler()
     return 's:line'
 endfunction
 
-function! flame#init()
+function! flame#init() abort
     if !exists('b:gitdir_path')
         let b:gitdir_path = git#dir(expand('%:p:h'))
     endif
@@ -44,11 +44,11 @@ function! flame#init()
     let b:flame_toggle = function('flame#enable')
 endfunction
 
-function! flame#line()
+function! flame#line() abort
     call s:on_cursor_movement()
 endfunction
 
-function! flame#enable()
+function! flame#enable() abort
     augroup flame
         autocmd CursorMoved <buffer> call s:on_cursor_movement()
     augroup END
@@ -57,12 +57,12 @@ function! flame#enable()
     let b:flame_toggle = function('flame#disable')
 endfunction
 
-function! flame#disable()
+function! flame#disable() abort
     echo ''
     autocmd! flame * <buffer>
     let b:flame_toggle = function('flame#enable')
 endfunction
 
-function! flame#toggle()
+function! flame#toggle() abort
     call b:flame_toggle()
 endfunction
